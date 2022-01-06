@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-
+        "lib": ["DOM","ESNext"]
     },
     "include": ["src/**/*.ts"]
 }
