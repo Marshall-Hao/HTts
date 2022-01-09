@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-08 03:31:58
- * @LastEditTime: 2022-01-08 05:59:26
+ * @LastEditTime: 2022-01-08 22:34:57
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /huatianClone/packages/huatian-svc/src/main.ts
@@ -16,8 +16,13 @@ import express,
 import cookieParser from 'cookie-parser'
 import { AccountContext } from './context/AccountContext'
 import { Token } from './dao/Token'
+import { ChatContext } from './context/ChatContext'
+import { Message } from '@huatian/model'
 const app = express()
 app.use(cookieParser())
+
+type LoggedInRequest = Request & {uid : number}
+
 
 async function sendStdResponse<T>(res: Response,  f: T)
 async function sendStdResponse(res:Response, f: Promise<any>)
@@ -28,6 +33,7 @@ async function sendStdResponse(res: Response, f: any) {
         if (data instanceof Promise) {
             data = await data
         }
+        console.log("this is", data)
         res.status(200).send({
             success: true,
             data
@@ -69,7 +75,17 @@ app.post('/token', express.json(), async (req, res) => {
     const tokenObject = token.refreshToken(user.getId())
     res.cookie("x-token", tokenObject.token)
     sendStdResponse(res, "ok")
-} )
+})
+
+app.post("/message", token, express.json(), async (req:LoggedInRequest, res:Response) => {
+    const uid = req.uid
+
+    const chatContext = ChatContext.getInstance()
+
+    sendStdResponse(res, async() => {
+        await chatContext.send(uid, req.body as Message)
+    })
+})
 
 app.listen(6001, ()=> {
     console.log('listen at 6001')
