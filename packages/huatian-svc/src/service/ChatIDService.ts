@@ -1,11 +1,13 @@
 /*
  * @Author: your name
  * @Date: 2022-01-08 17:06:08
- * @LastEditTime: 2022-01-08 18:31:45
+ * @LastEditTime: 2022-01-10 17:58:18
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /huatianClone/packages/huatian-svc/src/service/ChatIDService.ts
  */
+
+// * 数据服务
 import { ChatIDSetDao } from "../dao/Dao"
 import { DB } from "../dao/DB"
 const STEP:number = 100000
@@ -21,7 +23,7 @@ export class ChatIDService {
 
     // * get the set of the ids, ex: 0 ~ 99999
     public async requestIdSet() {
-        if (this.id_base >= this.id_start && this.id_base < (this.id_start + STEP)) {
+        if (this.id_base >= this.id_start && this.id_base < this.id_start + STEP) {
             return
         }
         const sequelize = DB.getSequelize()
@@ -55,6 +57,7 @@ export class ChatIDService {
     }
 
     public async getId() {
+        await this.requestIdSet()
         return this.id_base ++
     }
 }

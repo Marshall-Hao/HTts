@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-08 03:31:58
- * @LastEditTime: 2022-01-08 22:34:57
+ * @LastEditTime: 2022-01-10 18:22:38
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /huatianClone/packages/huatian-svc/src/main.ts
@@ -29,14 +29,15 @@ async function sendStdResponse(res:Response, f: Promise<any>)
 async function sendStdResponse(res:Response, f: () => Promise<any>)
 async function sendStdResponse(res: Response, f: any) {
     try {
+        console.log(typeof f)
         let data = typeof f === 'function' ? f() : f
         if (data instanceof Promise) {
             data = await data
+            console.log("this is", data)
         }
-        console.log("this is", data)
         res.status(200).send({
             success: true,
-            data
+            data: data
         })
     } catch (ex: any) {
         console.error(ex)
@@ -83,9 +84,23 @@ app.post("/message", token, express.json(), async (req:LoggedInRequest, res:Resp
     const chatContext = ChatContext.getInstance()
 
     sendStdResponse(res, async() => {
-        await chatContext.send(uid, req.body as Message)
+       return await chatContext.send(uid, req.body as Message)
     })
 })
+
+app.get('/message',token,async(req:LoggedInRequest, res) => {
+    const uid = req.uid
+    
+    const lastId = parseInt(req.query.last_id as string) || 0
+
+    console.log({uid, lastId})
+
+    const chatContext = ChatContext.getInstance()
+
+    sendStdResponse(res, () => {
+        return chatContext.read(uid, lastId)
+    })
+} )
 
 app.listen(6001, ()=> {
     console.log('listen at 6001')

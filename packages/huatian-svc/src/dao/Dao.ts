@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-08 17:37:15
- * @LastEditTime: 2022-01-08 17:55:05
+ * @LastEditTime: 2022-01-10 17:56:09
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /huatianClone/packages/huatian-svc/src/dao/Dao.ts
@@ -26,7 +26,7 @@ ChatIDSetDao.init({
         primaryKey: true
     },
     app : {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(20),
         allowNull: false
     },
     start : {
